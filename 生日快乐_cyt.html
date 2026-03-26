@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 cyt生日快乐 🎂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 输入页面样式 */
+        .input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            position: relative;
+        }
+
+        .input-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="20">🎈</text></svg>') repeat;
+            background-size: 60px 60px;
+            opacity: 0.1;
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        .input-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 182, 193, 0.5);
+        }
+
+        .input-form h1 {
+            color: #ff69b4;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.3);
+        }
+
+        .input-form p {
+            color: #ff1493;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            color: #ff69b4;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 3px solid #ffb6c1;
+            border-radius: 25px;
+            font-size: 16px;
+            background: rgba(255, 240, 245, 0.8);
+            color: #ff1493;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff69b4;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+            transform: scale(1.02);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border: 3px dashed #ffb6c1;
+            border-radius: 25px;
+            background: rgba(255, 240, 245, 0.8);
+            color: #ff1493;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]:hover {
+            border-color: #ff69b4;
+            background: rgba(255, 240, 245, 1);
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.3);
+            margin-top: 20px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 105, 180, 0.4);
+        }
+
+        /* 生日页面样式 */
+        .birthday-container {
+            display: none;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #87CEEB 0%, #FFB6C1 50%, #DDA0DD 100%);
+        }
+
+        .webgl {
+            position: fixed;
+            top: 0;
+            left: 0;
+            outline: none;
+        }
+
+        .photo-frames-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .photo-frame {
+            position: absolute;
+            width: 160px;  /* 稍微缩小，避免边缘被裁剪 */
+            height: 200px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            opacity: 0;
+            transform: translateY(-400px) rotate(0deg);
+            transition: all 2.5s ease-in-out;
+            transform-origin: top center; /* 改为中心定位 */
+            z-index: 5;
+        }
+
+        .photo-frame.active {
+            opacity: 1;
+        }
+
+        .photo-frame.fade-out {
+            opacity: 0;
+            transform: scale(0.8) rotate(10deg);
+        }
+
+        .photo-frame.tilt-left {
+            transform: rotate(-15deg);
+        }
+
+        .photo-frame.tilt-right {
+            transform: rotate(15deg);
+        }
+
+        .photo-frame.straight {
+            transform: rotate(0deg);
+        }
+
+        .photo-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, #666, #333);
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.3);
+            transform-origin: top;
+        }
+
+        .photo-frame::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 6px;
+            background: #444;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            transform: translate(-3px, -3px);
+        }
+
+        .photo-content {
+            width: 100%;
+            height: 130px;  /* 相应调整高度 */
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .photo-label {
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+            font-weight: bold;
+            text-shadow: none;
+        }
+
+        .frame-wire {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, #666);
+            animation: swingWire 4s ease-in-out infinite;
+            transform-origin: top;
+        }
+
+        @keyframes swingWire {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            75% { transform: rotate(-3deg); }
+        }
+
+        .birthday-title {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            text-align: center;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(255, 105, 180, 0.8);
+        }
+
+        .birthday-title h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        .birthday-title .name {
+            font-size: 2em;
+            color: #ffff99;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.6);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ff69b4;
+            border-radius: 2px;
+            animation: confetti-fall 4s infinite linear;
+        }
+
+        .confetti-piece:nth-child(2n) { 
+            background: #ffb6c1; 
+            animation-delay: 0.5s;
+            border-radius: 50%;
+        }
+        .confetti-piece:nth-child(3n) { 
+            background: #ff1493; 
+            animation-delay: 1s;
+            width: 8px;
+            height: 8px;
+        }
+        .confetti-piece:nth-child(4n) { 
+            background: #ffd700; 
+            animation-delay: 1.5s;
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+        }
+        .confetti-piece:nth-child(5n) { 
+            background: #98fb98; 
+            animation-delay: 2s;
+        }
+        .confetti-piece:nth-child(6n) { 
+            background: #87ceeb; 
+            animation-delay: 2.5s;
+            border-radius: 50%;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .music-note {
+            position: absolute;
+            font-size: 2em;
+            color: rgba(255, 255, 255, 0.8);
+            z-index: 12;
+            animation: musicFloat 4s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes musicFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .reset-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 25;
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff1493;
+            border: 2px solid #ff69b4;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #ff69b4;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 80px;
+            left: 30px;
+            z-index: 25;
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff1493;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            max-width: 200px;
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 105, 180, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+            color: white;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- 输入页面 -->
+    <div class="input-container" id="inputContainer">
+        <div class="input-form">
+            <h1>🎂 吉卜力风格生日快乐 🎂</h1>
+            <p>让我们为你心爱的人准备一个特别的生日惊喜吧！</p>
+            
+            <form id="birthdayForm">
+                <div class="form-group">
+                    <label for="personName">🌟 Ta的名字：</label>
+                    <input type="text" id="personName" placeholder="输入生日明星的名字..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="photos">📸 上传照片（可选）：</label>
+                    <input type="file" id="photos" multiple accept="image/*">
+                    <small style="color: #ff69b4; font-size: 0.9em;">可以选择多张照片哦～</small>
+                </div>
+                
+                <button type="submit" class="start-btn">🎉 开始生日派对 🎉</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 加载页面 -->
+    <div id="loader">
+        <h1>🎂 正在准备蛋糕... 🎂</h1>
+    </div>
+
+    <!-- 生日页面 -->
+    <div class="birthday-container" id="birthdayContainer">
+        <canvas class="webgl" id="webgl"></canvas>
+        <div class="photo-frames-container" id="photoFramesContainer"></div>
+        
+        <div class="birthday-title">
+            <h1>🎉 生日快乐 🎉</h1>
+            <div class="name" id="birthdayName"></div>
+        </div>
+        
+        <div class="confetti" id="confetti"></div>
+        
+        <div class="instructions">
+            🎮 可以拖拽旋转蛋糕<br>
+            🎯 点击蛋糕有惊喜<br>
+            ⌨️ 按空格键放彩纸
+        </div>
+        
+        <button class="reset-btn" onclick="window.resetPage()">🔄 重新开始</button>
+    </div>
+
+    <!-- 萤火虫着色器 -->
+    <script type="x-shader/x-vertex" id="vertexshader">
+        uniform float uPixelRatio;
+        uniform float uSize;
+        uniform float uTime;
+        attribute float aScale;
+        void main() {
+            vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+            modelPosition.y += sin(uTime + modelPosition.x * 100.0) * aScale * 0.2;
+            modelPosition.z += sin(uTime + modelPosition.x * 100.0) * aScale * 0.2;
+            modelPosition.x += cos(uTime + modelPosition.x * 100.0) * aScale * 0.2;
+            vec4 viewPosition = viewMatrix * modelPosition;
+            vec4 projectionPostion = projectionMatrix * viewPosition;
+
+            gl_Position = projectionPostion;
+            gl_PointSize = uSize * aScale * uPixelRatio;
+            gl_PointSize += (1.0 / - viewPosition.z);
+        }
+    </script>
+
+    <script type="x-shader/x-fragment" id="fragmentshader">
+        void main() {
+            float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
+            float strength = 0.1 / distanceToCenter - 0.25;
+            gl_FragColor = vec4(1.0, 0.7, 0.9, strength);
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from "https://esm.sh/three@0.151.3";
+        import { GLTFLoader } from "https://esm.sh/three@0.151.3/examples/jsm/loaders/GLTFLoader.js";
+        import { OrbitControls } from "https://esm.sh/three@0.151.3/addons/controls/OrbitControls.js";
+        import { OutlineEffect } from "https://esm.sh/three@0.151.3/addons/effects/OutlineEffect.js";
+
+        let photoFiles = [];
+        let currentPhotoIndex = 0;
+        let photoInterval;
+        let scene, camera, renderer, controls, effect;
+        let cake, mixer, clock;
+        let firefliesMaterial;
+        
+        // 固定的人名和图片文件夹
+        const PERSON_NAME = "cyt";
+        const PHOTOS_FOLDER = "./图片/";
+        
+        // 预定义的图片文件名列表（需要手动添加图片到图片文件夹）
+        const PHOTO_FILENAMES = [
+            "1.jpg", "1.jpeg", "1.png", "1.gif", "1.webp",
+            "2.jpg", "2.jpeg", "2.png", "2.gif", "2.webp",
+            "3.jpg", "3.jpeg", "3.png", "3.gif", "3.webp",
+            "4.jpg", "4.jpeg", "4.png", "4.gif", "4.webp",
+            "5.jpg", "5.jpeg", "5.png", "5.gif", "5.webp",
+            "6.jpg", "6.jpeg", "6.png", "6.gif", "6.webp",
+            "7.jpg", "7.jpeg", "7.png", "7.gif", "7.webp",
+            "8.jpg", "8.jpeg", "8.png", "8.gif", "8.webp",
+            "9.jpg", "9.jpeg", "9.png", "9.gif", "9.webp",
+            "10.jpg", "10.jpeg", "10.png", "10.gif", "10.webp"
+        ];
+
+        // 吉卜力风格着色器
+        const vertexShader = `
+            precision highp float;
+            precision highp int;
+            varying vec3 vNormal;
+            varying vec3 vPosition;
+            void main() {
+                vNormal = normal;
+                vPosition = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            }
+        `;
+
+        const fragmentShader = `
+            precision highp float;
+            precision highp int;
+            uniform mat4 modelMatrix;
+            uniform vec3 colorMap[4];
+            uniform float brightnessThresholds[3];
+            uniform vec3 lightPosition;
+            varying vec3 vNormal;
+            varying vec3 vPosition;
+
+            void main() {
+                vec3 worldPosition = ( modelMatrix * vec4( vPosition, 1.0 )).xyz;
+                vec3 worldNormal = normalize( vec3( modelMatrix * vec4( vNormal, 0.0 ) ) );
+                vec3 lightVector = normalize( lightPosition - worldPosition );
+                float brightness = dot( worldNormal, lightVector );
+
+                vec4 final;
+                if (brightness > brightnessThresholds[0])
+                    final = vec4(colorMap[0], 1);
+                else if (brightness > brightnessThresholds[1])
+                    final = vec4(colorMap[1], 1);
+                else if (brightness > brightnessThresholds[2])
+                    final = vec4(colorMap[2], 1);
+                else
+                    final = vec4(colorMap[3], 1);
+
+                gl_FragColor = vec4( final );
+            }
+        `;
+
+        // 创建吉卜力风格材质
+        function createGhibliMaterial(colorMap, brightnessThresholds, lightPosition) {
+            return new THREE.ShaderMaterial({
+                uniforms: {
+                    colorMap: { value: colorMap },
+                    brightnessThresholds: { value: brightnessThresholds },
+                    lightPosition: { value: lightPosition },
+                },
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+            });
+        }
+
+        // 生日蛋糕材质颜色
+        const getCakeMaterials = (name) => {
+            const materialColors = {
+                // 蛋糕层 - 粉色系
+                CakeBase: [
+                    new THREE.Color("#ffb3d9"),    // 最亮
+                    new THREE.Color("#ff99cc"),    // 中亮
+                    new THREE.Color("#ff80bf"),    // 中暗
+                    new THREE.Color("#ff66b3")     // 最暗
+                ],
+                CakeMiddle: [
+                    new THREE.Color("#ffd9e6"),
+                    new THREE.Color("#ffccdd"),
+                    new THREE.Color("#ffb3d1"),
+                    new THREE.Color("#ff99cc")
+                ],
+                CakeTop: [
+                    new THREE.Color("#ffe6f2"),
+                    new THREE.Color("#ffdde6"),
+                    new THREE.Color("#ffd4e0"),
+                    new THREE.Color("#ffccd9")
+                ],
+                // 蜡烛
+                Candle: [
+                    new THREE.Color("#ffff99"),
+                    new THREE.Color("#ffff66"),
+                    new THREE.Color("#ffff33"),
+                    new THREE.Color("#ffff00")
+                ],
+                // 装饰
+                Decoration: [
+                    new THREE.Color("#ffd700"),
+                    new THREE.Color("#ffcc00"),
+                    new THREE.Color("#ffb300"),
+                    new THREE.Color("#ff9900")
+                ],
+                // 奶油
+                Cream: [
+                    new THREE.Color("#ffffff"),
+                    new THREE.Color("#fff5f5"),
+                    new THREE.Color("#ffebeb"),
+                    new THREE.Color("#ffe0e0")
+                ],
+                // 樱桃
+                Cherry: [
+                    new THREE.Color("#ff6b8a"),
+                    new THREE.Color("#ff4d6d"),
+                    new THREE.Color("#ff1744"),
+                    new THREE.Color("#d50000")
+                ]
+            };
+
+            return materialColors[name] || materialColors.CakeBase;
+        };
+
+        // 检测当前环境并加载合适的蛋糕
+        async function loadCakeModel() {
+            console.log('开始初始化蛋糕模型...');
+            console.log('当前页面协议：', window.location.protocol);
+            console.log('当前页面URL：', window.location.href);
+            
+            // 检测是否为file://协议（双击打开）
+            const isFileProtocol = window.location.protocol === 'file:';
+            
+            if (isFileProtocol) {
+                console.log('🔍 检测到file://协议，由于CORS限制，将使用精美的程序化蛋糕');
+                console.log('💡 如需使用外部3D模型，请通过HTTP服务器访问：');
+                console.log('   python -m http.server 8000');
+                console.log('   然后访问: http://localhost:8000/吉卜力生日快乐.html');
+                
+                // 直接使用程序化蛋糕
+                cake = createFallbackCake();
+                scene.add(cake);
+                console.log('✅ 程序化蛋糕已添加到场景');
+                return;
+            }
+            
+            // HTTP协议下尝试加载外部模型
+            const loader = new GLTFLoader();
+            const modelPath = './蛋糕模型/scene.gltf';
+            
+            try {
+                console.log('🌐 HTTP协议检测到，尝试加载外部3D模型...');
+                console.log('模型路径：', modelPath);
+                
+                const gltf = await new Promise((resolve, reject) => {
+                    // 设置3秒超时，避免长时间等待
+                    const timeout = setTimeout(() => {
+                        reject(new Error('模型加载超时（3秒）'));
+                    }, 3000);
+                    
+                    loader.load(
+                        modelPath,
+                        (gltf) => {
+                            clearTimeout(timeout);
+                            resolve(gltf);
+                        },
+                        (progress) => {
+                            const percentage = (progress.loaded / progress.total * 100).toFixed(2);
+                            console.log('模型加载进度：', percentage + '%');
+                        },
+                        (error) => {
+                            clearTimeout(timeout);
+                            reject(error);
+                        }
+                    );
+                });
+                
+                console.log('✅ 外部模型加载成功！', gltf);
+                console.log('场景内容：', gltf.scene);
+                console.log('模型子对象数量：', gltf.scene.children.length);
+                
+                cake = gltf.scene;
+                
+                // 计算模型包围盒以确定合适的缩放
+                const box = new THREE.Box3().setFromObject(cake);
+                const size = box.getSize(new THREE.Vector3());
+                console.log('模型原始尺寸：', size);
+                
+                // 根据模型大小自动调整缩放
+                const maxDimension = Math.max(size.x, size.y, size.z);
+                const targetSize = 2.5; // 目标尺寸
+                const scale = targetSize / maxDimension;
+                
+                cake.scale.setScalar(scale);
+                console.log('应用缩放：', scale);
+                
+                // 将模型置于合适位置
+                box.setFromObject(cake);
+                const center = box.getCenter(new THREE.Vector3());
+                cake.position.x = -center.x;
+                cake.position.y = -box.min.y - 0.8; // 向下移动0.8单位，避免偏上
+                cake.position.z = -center.z;
+                
+                console.log('模型最终位置：', cake.position);
+                
+                // 应用材质处理
+                cake.traverse((child) => {
+                    if (child.isMesh) {
+                        console.log('处理网格：', child.name, '材质：', child.material?.name);
+                        
+                        // 启用阴影
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        
+                        // 保持原始材质但稍微调整
+                        if (child.material) {
+                            child.material.transparent = true;
+                            child.material.opacity = 0.98;
+                            
+                            if (child.material.map) {
+                                child.material.needsUpdate = true;
+                            }
+                        }
+                    }
+                });
+                
+                scene.add(cake);
+                console.log('🎂 外部蛋糕模型成功添加到场景！');
+                
+            } catch (error) {
+                console.error('❌ 外部模型加载失败：', error);
+                console.log('错误详细信息：');
+                console.log('- 错误类型：', error.constructor.name);
+                console.log('- 错误消息：', error.message);
+                
+                if (error.target) {
+                    console.log('- HTTP状态：', error.target.status);
+                    console.log('- 状态文本：', error.target.statusText);
+                    console.log('- 响应URL：', error.target.responseURL);
+                }
+                
+                console.log('� 外部模型加载失败，使用精美的程序化蛋糕...');
+                cake = createFallbackCake();
+                scene.add(cake);
+                console.log('✅ 程序化蛋糕已添加到场景');
+            }
+        }
+
+        // 根据材质名称判断颜色类别
+        function getColorCategory(materialName) {
+            const name = materialName.toLowerCase();
+            if (name.includes('cake') || name.includes('base')) return 'CakeBase';
+            if (name.includes('cream') || name.includes('white')) return 'Cream';
+            if (name.includes('candle') || name.includes('yellow')) return 'Candle';
+            if (name.includes('cherry') || name.includes('berry') || name.includes('red')) return 'Cherry';
+            if (name.includes('decoration') || name.includes('gold')) return 'Decoration';
+            return 'CakeBase';
+        }
+
+        // 备用程序化蛋糕（如果模型加载失败）
+        function createFallbackCake() {
+            console.log('创建备用程序化蛋糕...');
+            const cakeGroup = new THREE.Group();
+            
+            // 蛋糕底层
+            const baseGeometry = new THREE.CylinderGeometry(1.5, 1.5, 0.6, 32);
+            const baseMaterial = createGhibliMaterial(
+                getCakeMaterials('CakeBase'),
+                [0.7, 0.35, 0.0001],
+                new THREE.Vector3(-5, 10, 5)
+            );
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 0;
+            cakeGroup.add(base);
+
+            // 蛋糕顶层
+            const topGeometry = new THREE.CylinderGeometry(1, 1, 0.4, 32);
+            const topMaterial = createGhibliMaterial(
+                getCakeMaterials('CakeTop'),
+                [0.7, 0.35, 0.0001],
+                new THREE.Vector3(-5, 10, 5)
+            );
+            const top = new THREE.Mesh(topGeometry, topMaterial);
+            top.position.y = 0.5;
+            cakeGroup.add(top);
+
+            // 蜡烛
+            for (let i = 0; i < 5; i++) {
+                const candleGroup = new THREE.Group();
+                
+                // 蜡烛主体
+                const candleGeometry = new THREE.CylinderGeometry(0.03, 0.03, 0.4, 8);
+                const candleMaterial = createGhibliMaterial(
+                    getCakeMaterials('Candle'),
+                    [0.7, 0.35, 0.0001],
+                    new THREE.Vector3(-5, 10, 5)
+                );
+                const candleMesh = new THREE.Mesh(candleGeometry, candleMaterial);
+                candleMesh.position.y = 0.9;
+                
+                // 火焰
+                const flameGeometry = new THREE.SphereGeometry(0.04, 8, 8);
+                const flameMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0xff6600,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const flame = new THREE.Mesh(flameGeometry, flameMaterial);
+                flame.position.y = 1.15;
+                flame.scale.y = 1.5;
+                
+                candleGroup.add(candleMesh);
+                candleGroup.add(flame);
+                
+                // 分布蜡烛
+                const angle = (i / 5) * Math.PI * 2;
+                candleGroup.position.x = Math.cos(angle) * 0.5;
+                candleGroup.position.z = Math.sin(angle) * 0.5;
+                
+                cakeGroup.add(candleGroup);
+            }
+
+            // 樱桃装饰
+            for (let i = 0; i < 8; i++) {
+                const cherryGeometry = new THREE.SphereGeometry(0.06, 16, 16);
+                const cherryMaterial = createGhibliMaterial(
+                    getCakeMaterials('Cherry'),
+                    [0.7, 0.35, 0.0001],
+                    new THREE.Vector3(-5, 10, 5)
+                );
+                const cherry = new THREE.Mesh(cherryGeometry, cherryMaterial);
+                
+                const angle = (i / 8) * Math.PI * 2;
+                cherry.position.x = Math.cos(angle) * 1.2;
+                cherry.position.z = Math.sin(angle) * 1.2;
+                cherry.position.y = 0.3;
+                
+                cakeGroup.add(cherry);
+            }
+
+            return cakeGroup;
+        }
+
+        // 添加照片装饰到蛋糕上（已禁用）
+        function addPhotoDecorations(cakeGroup) {
+            // 暂时移除蛋糕上的照片装饰
+            console.log('照片装饰功能已禁用');
+            return;
+        }
+
+        // 创建萤火虫效果
+        function createFireflies() {
+            const firefliesGeometry = new THREE.BufferGeometry();
+            const firefliesCount = 50;
+            const positionArray = new Float32Array(firefliesCount * 3);
+            const scaleArray = new Float32Array(firefliesCount);
+
+            for (let i = 0; i < firefliesCount; i++) {
+                new THREE.Vector3(
+                    (Math.random() - 0.5) * 10,
+                    Math.random() * 8,
+                    (Math.random() - 0.5) * 10
+                ).toArray(positionArray, i * 3);
+                scaleArray[i] = Math.random();
+            }
+
+            firefliesGeometry.setAttribute(
+                "position",
+                new THREE.BufferAttribute(positionArray, 3)
+            );
+            firefliesGeometry.setAttribute(
+                "aScale",
+                new THREE.BufferAttribute(scaleArray, 1)
+            );
+
+            firefliesMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    uTime: { value: 0 },
+                    uPixelRatio: { value: 1 },
+                    uSize: { value: 15 },
+                },
+                vertexShader: document.getElementById("vertexshader").textContent,
+                fragmentShader: document.getElementById("fragmentshader").textContent,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+            });
+
+            const fireflies = new THREE.Points(firefliesGeometry, firefliesMaterial);
+            scene.add(fireflies);
+        }
+
+        // 初始化3D场景
+        function init3DScene() {
+            const canvas = document.getElementById('webgl');
+            
+            // 场景
+            scene = new THREE.Scene();
+            
+            // 相机
+            camera = new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(5, 3, 5);
+            
+            // 渲染器
+            renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true,
+                antialias: true,
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            
+            // 轮廓效果
+            effect = new OutlineEffect(renderer, {
+                defaultThickness: 0.003,
+                defaultColor: new THREE.Color(0x2d2d2d).toArray(),
+                defaultAlpha: 1,
+            });
+            
+            // 控制器
+            controls = new OrbitControls(camera, canvas);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableZoom = true;
+            controls.enablePan = false;
+            controls.minDistance = 3;
+            controls.maxDistance = 15;
+            controls.minPolarAngle = Math.PI / 6;
+            controls.maxPolarAngle = Math.PI / 2;
+            controls.target.set(0, 0, 0);
+            controls.update();
+            
+            // 光照
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(-5, 10, 5);
+            scene.add(directionalLight);
+            
+            // 创建蛋糕 - 加载外部模型
+            loadCakeModel();
+            
+            // 创建萤火虫
+            createFireflies();
+            
+            // 时钟
+            clock = new THREE.Clock();
+            
+            // 点击事件
+            canvas.addEventListener('click', onCakeClick);
+            
+            animate();
+        }
+
+        // 点击蛋糕事件
+        function onCakeClick() {
+            // 蛋糕旋转动画
+            const targetRotation = cake.rotation.y + Math.PI * 2;
+            const startRotation = cake.rotation.y;
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            function rotateCake(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+                
+                cake.rotation.y = startRotation + (targetRotation - startRotation) * eased;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(rotateCake);
+                }
+            }
+            
+            requestAnimationFrame(rotateCake);
+            
+            // 创建额外彩纸
+            createConfetti();
+        }
+
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const elapsedTime = clock.getElapsedTime();
+            
+            // 更新萤火虫
+            if (firefliesMaterial) {
+                firefliesMaterial.uniforms.uTime.value = elapsedTime;
+            }
+            
+            // 蛋糕缓慢旋转
+            if (cake) {
+                cake.rotation.y += 0.002;
+                
+                // 蜡烛火焰动画
+                cake.children.forEach((child, index) => {
+                    if (index >= 3) { // 蜡烛组
+                        const flame = child.children[1];
+                        if (flame) {
+                            flame.scale.y = 1.5 + Math.sin(elapsedTime * 5 + index) * 0.3;
+                            flame.scale.x = 1 + Math.sin(elapsedTime * 3 + index) * 0.2;
+                            flame.scale.z = 1 + Math.cos(elapsedTime * 4 + index) * 0.2;
+                        }
+                    }
+                });
+            }
+            
+            controls.update();
+            effect.render(scene, camera);
+        }
+
+        // 窗口调整
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 自动加载图片文件夹中的图片
+        async function loadPhotosFromFolder() {
+            console.log('开始加载图片文件夹:', PHOTOS_FOLDER);
+            const loadedPhotos = [];
+            
+            for (const filename of PHOTO_FILENAMES) {
+                try {
+                    const response = await fetch(PHOTOS_FOLDER + filename);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const file = new File([blob], filename, { type: blob.type });
+                        loadedPhotos.push(file);
+                        console.log('成功加载图片:', filename);
+                    }
+                } catch (error) {
+                    // 文件不存在，跳过
+                    console.log('图片不存在，跳过:', filename);
+                }
+            }
+            
+            console.log('总共加载了', loadedPhotos.length, '张图片');
+            return loadedPhotos;
+        }
+        
+        // 自动启动生日页面
+        async function autoStartBirthdayPage() {
+            console.log('自动启动生日页面，目标人物:', PERSON_NAME);
+            
+            // 隐藏输入界面，显示加载界面
+            document.getElementById('inputContainer').style.display = 'none';
+            document.getElementById('loader').style.display = 'flex';
+            
+            // 加载图片
+            photoFiles = await loadPhotosFromFolder();
+            
+            // 模拟加载时间
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('birthdayContainer').style.display = 'block';
+                document.getElementById('birthdayName').textContent = PERSON_NAME;
+                
+                // 初始化照片相框
+                if (photoFiles.length > 0) {
+                    initPhotoFrames();
+                }
+                
+                // 创建彩纸效果
+                createConfetti();
+                
+                // 创建音符动画
+                createMusicNotes();
+                
+                // 初始化3D场景
+                init3DScene();
+            }, 2000);
+        }
+
+        function startBirthdayPage(name) {
+            document.getElementById('inputContainer').style.display = 'none';
+            document.getElementById('loader').style.display = 'flex';
+            
+            // 模拟加载时间
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('birthdayContainer').style.display = 'block';
+                document.getElementById('birthdayName').textContent = name;
+                
+                // 初始化照片相框
+                if (photoFiles.length > 0) {
+                    initPhotoFrames();
+                }
+                
+                // 创建彩纸效果
+                createConfetti();
+                
+                // 创建音符动画
+                createMusicNotes();
+                
+                // 初始化3D场景
+                init3DScene();
+            }, 2000);
+        }
+
+        function initPhotoFrames() {
+            if (photoFiles.length === 0) return;
+            
+            const frameContainer = document.getElementById('photoFramesContainer');
+            frameContainer.innerHTML = '';
+            
+            // 不同的悬挂位置和线长 - 优化分布，避开中心区域
+            const positions = [
+                { left: '5%', wireLength: 80, tilt: 'tilt-left' },      // 左侧边缘
+                { left: '15%', wireLength: 120, tilt: 'straight' },     // 左侧
+                { left: '25%', wireLength: 60, tilt: 'tilt-right' },    // 左中
+                { left: '70%', wireLength: 100, tilt: 'tilt-left' },    // 右中
+                { left: '80%', wireLength: 140, tilt: 'straight' },     // 右侧
+                { left: '90%', wireLength: 90, tilt: 'tilt-right' },    // 右侧边缘
+                { left: '10%', wireLength: 160, tilt: 'tilt-left' },    // 左侧深度
+                { left: '85%', wireLength: 70, tilt: 'tilt-right' },    // 右侧高位
+                { left: '20%', wireLength: 180, tilt: 'straight' },     // 左侧低位
+                { left: '75%', wireLength: 110, tilt: 'tilt-left' }     // 右侧中位
+            ];
+            
+            let currentFrameIndex = 0;
+            
+            function showNextFrame() {
+                if (photoFiles.length === 0) return;
+                
+                // 根据照片数量决定一次显示几个相框
+                const framesToShow = Math.min(photoFiles.length >= 5 ? 3 : photoFiles.length >= 3 ? 2 : 1, positions.length);
+                
+                for (let i = 0; i < framesToShow; i++) {
+                    const position = positions[i % positions.length];
+                    const file = photoFiles[currentFrameIndex % photoFiles.length];
+                    
+                    setTimeout(() => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const frame = document.createElement('div');
+                            frame.className = `photo-frame ${position.tilt}`;
+                            
+                            // 计算居中位置，避免相框被裁剪
+                            const leftPercentage = parseFloat(position.left);
+                            frame.style.left = `calc(${position.left} - 80px)`; // 80px是相框宽度的一半
+                            
+                            // 设置线长和相框最终位置
+                            const finalY = 50 + position.wireLength;
+                            frame.style.top = finalY + 'px';
+                            
+                            frame.innerHTML = `
+                                <div class="frame-wire" style="height: ${position.wireLength}px; top: -${position.wireLength}px;"></div>
+                                <div class="photo-content" style="background-image: url(${e.target.result})"></div>
+                                <div class="photo-label">♥ ${PERSON_NAME}的美好时光 ♥</div>
+                            `;
+                            
+                            frameContainer.appendChild(frame);
+                            
+                            // 显示动画
+                            setTimeout(() => {
+                                frame.classList.add('active');
+                                frame.style.transform = `translateY(0) ${frame.classList.contains('tilt-left') ? 'rotate(-15deg)' : 
+                                    frame.classList.contains('tilt-right') ? 'rotate(15deg)' : 'rotate(0deg)'}`;
+                            }, 100);
+                            
+                            // 8秒后开始淡出
+                            setTimeout(() => {
+                                frame.classList.add('fade-out');
+                                // 淡出完成后移除
+                                setTimeout(() => {
+                                    frame.remove();
+                                }, 2500);
+                            }, 8000);
+                        };
+                        reader.readAsDataURL(file);
+                    }, i * 500); // 错开显示时间
+                    
+                    // 修复：确保循环索引正确递增
+                    currentFrameIndex = (currentFrameIndex + 1) % photoFiles.length;
+                }
+            }
+            
+            // 立即显示第一批相框
+            showNextFrame();
+            
+            // 每10秒显示新的相框组
+            photoInterval = setInterval(showNextFrame, 10000);
+        }
+
+        function createConfetti() {
+            const confetti = document.getElementById('confetti');
+            confetti.innerHTML = '';
+            
+            for (let i = 0; i < 60; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.animationDelay = Math.random() * 3 + 's';
+                piece.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                
+                const size = Math.random() * 8 + 6;
+                piece.style.width = size + 'px';
+                piece.style.height = size + 'px';
+                
+                confetti.appendChild(piece);
+            }
+        }
+
+        function createMusicNotes() {
+            const notes = ['🎵', '🎶', '🎼', '🎤'];
+            
+            setInterval(() => {
+                const note = document.createElement('div');
+                note.className = 'music-note';
+                note.textContent = notes[Math.floor(Math.random() * notes.length)];
+                note.style.left = Math.random() * 90 + '%';
+                note.style.top = Math.random() * 80 + 20 + '%';
+                document.getElementById('birthdayContainer').appendChild(note);
+                
+                setTimeout(() => {
+                    note.remove();
+                }, 4000);
+            }, 2000);
+        }
+
+        function resetPage() {
+            clearInterval(photoInterval);
+            document.getElementById('birthdayContainer').style.display = 'none';
+            document.getElementById('inputContainer').style.display = 'flex';
+            document.getElementById('birthdayForm').reset();
+            document.getElementById('photoFramesContainer').innerHTML = '';
+            document.getElementById('confetti').innerHTML = '';
+            
+            document.querySelectorAll('.music-note').forEach(note => note.remove());
+            
+            photoFiles = [];
+            currentPhotoIndex = 0;
+            
+            // 清理3D场景
+            if (scene) {
+                // 清理所有对象
+                while(scene.children.length > 0){ 
+                    scene.remove(scene.children[0]); 
+                }
+                
+                // 重置控制器
+                if (controls) {
+                    controls.dispose();
+                    controls = null;
+                }
+                
+                // 重置渲染器
+                if (renderer) {
+                    renderer.dispose();
+                    renderer = null;
+                }
+                
+                scene = null;
+                camera = null;
+                cake = null;
+                effect = null;
+            }
+        }
+
+        // 页面加载完成后自动启动
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，自动启动cyt的生日祝福页面');
+            autoStartBirthdayPage();
+        });
+        
+        // 将函数暴露到全局作用域
+        window.resetPage = resetPage;
+
+        // 键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' && document.getElementById('birthdayContainer').style.display === 'block') {
+                e.preventDefault();
+                createConfetti();
+            }
+        });
+
+        // 防止右键菜单
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>

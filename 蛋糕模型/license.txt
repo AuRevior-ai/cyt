@@ -1,0 +1,11 @@
+Model Information:
+* title:	Floral_cake_fbx
+* source:	https://sketchfab.com/3d-models/floral-cake-fbx-690c852a823944b3abfaa23f3ffff5e8
+* author:	Creater (https://sketchfab.com/7f5609904fe14de59b74533836ad9b)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Floral_cake_fbx" (https://sketchfab.com/3d-models/floral-cake-fbx-690c852a823944b3abfaa23f3ffff5e8) by Creater (https://sketchfab.com/7f5609904fe14de59b74533836ad9b) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
