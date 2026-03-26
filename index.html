@@ -414,29 +414,6 @@
     </style>
 </head>
 <body>
-    <!-- 输入页面 -->
-    <div class="input-container" id="inputContainer">
-        <div class="input-form">
-            <h1>🎂 吉卜力风格生日快乐 🎂</h1>
-            <p>让我们为你心爱的人准备一个特别的生日惊喜吧！</p>
-            
-            <form id="birthdayForm">
-                <div class="form-group">
-                    <label for="personName">🌟 Ta的名字：</label>
-                    <input type="text" id="personName" placeholder="输入生日明星的名字..." required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="photos">📸 上传照片（可选）：</label>
-                    <input type="file" id="photos" multiple accept="image/*">
-                    <small style="color: #ff69b4; font-size: 0.9em;">可以选择多张照片哦～</small>
-                </div>
-                
-                <button type="submit" class="start-btn">🎉 开始生日派对 🎉</button>
-            </form>
-        </div>
-    </div>
-
     <!-- 加载页面 -->
     <div id="loader">
         <h1>🎂 正在准备蛋糕... 🎂</h1>
@@ -1063,8 +1040,7 @@
         async function autoStartBirthdayPage() {
             console.log('自动启动生日页面，目标人物:', PERSON_NAME);
             
-            // 隐藏输入界面，显示加载界面
-            document.getElementById('inputContainer').style.display = 'none';
+            // 直接显示加载界面
             document.getElementById('loader').style.display = 'flex';
             
             // 加载图片
@@ -1075,32 +1051,6 @@
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('birthdayContainer').style.display = 'block';
                 document.getElementById('birthdayName').textContent = PERSON_NAME;
-                
-                // 初始化照片相框
-                if (photoFiles.length > 0) {
-                    initPhotoFrames();
-                }
-                
-                // 创建彩纸效果
-                createConfetti();
-                
-                // 创建音符动画
-                createMusicNotes();
-                
-                // 初始化3D场景
-                init3DScene();
-            }, 2000);
-        }
-
-        function startBirthdayPage(name) {
-            document.getElementById('inputContainer').style.display = 'none';
-            document.getElementById('loader').style.display = 'flex';
-            
-            // 模拟加载时间
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('birthdayContainer').style.display = 'block';
-                document.getElementById('birthdayName').textContent = name;
                 
                 // 初始化照片相框
                 if (photoFiles.length > 0) {
@@ -1240,42 +1190,7 @@
         }
 
         function resetPage() {
-            clearInterval(photoInterval);
-            document.getElementById('birthdayContainer').style.display = 'none';
-            document.getElementById('inputContainer').style.display = 'flex';
-            document.getElementById('birthdayForm').reset();
-            document.getElementById('photoFramesContainer').innerHTML = '';
-            document.getElementById('confetti').innerHTML = '';
-            
-            document.querySelectorAll('.music-note').forEach(note => note.remove());
-            
-            photoFiles = [];
-            currentPhotoIndex = 0;
-            
-            // 清理3D场景
-            if (scene) {
-                // 清理所有对象
-                while(scene.children.length > 0){ 
-                    scene.remove(scene.children[0]); 
-                }
-                
-                // 重置控制器
-                if (controls) {
-                    controls.dispose();
-                    controls = null;
-                }
-                
-                // 重置渲染器
-                if (renderer) {
-                    renderer.dispose();
-                    renderer = null;
-                }
-                
-                scene = null;
-                camera = null;
-                cake = null;
-                effect = null;
-            }
+            window.location.reload();
         }
 
         // 页面加载完成后自动启动
